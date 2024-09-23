@@ -4,56 +4,57 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import Joi from 'joi';
 
-const Login = () => {
+const Login = ({saveUserData}) => {
     const navigate = useNavigate();
     const [error, setError] = useState('');
     const [errorList, setErrorList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState({
-        username: '', // Now the email is used as 'username'
+        username: '', 
         password: ''
     });
 
-    // Function to update user state based on input changes
     const getUserData = (event) => {
         const myUser = { ...user };
         myUser[event.target.name] = event.target.value;
         setUser(myUser);
     };
 
-    // Function to send registration data to the API
     const sendLoginDataToApi = async () => {
         try {
             const { data } = await axios.post(`http://localhost:5000/api/users/Login`, user);
-            if (data.message === 'User Logined successfully') {
+            console.log('Response data:', data);
+            if (data.token && data.token.length > 0) {
                 setIsLoading(false);
-                navigate('/login');
+                localStorage.setItem('userToken', data.token);
+                saveUserData();
+                navigate('/todolist');
+                window.location.reload(); // ليس الحل المثالي، ولكنه يمكن أن يكون حلاً مؤقتًا
             } else {
                 setIsLoading(false);
-                setError(data.message || 'An error occurred during registration');
+                setError(data.message || 'An error occurred during Login');
             }
         } catch (err) {
             setIsLoading(false);
             if (err.response) {
                 console.error('Error Response:', err.response.data);
                 if (err.response.status === 400) {
-                    setError(err.response.data.message || 'Email already exists');
+                    setError(err.response.data.message || 'Invalid credentials');
                 } else {
-                    setError('An error occurred during registration');
+                    setError('An error occurred during Login');
                 }
             } else {
                 console.error('Error:', err.message);
-                setError('An error occurred during registration');
+                setError('An error occurred during Login');
             }
         }
     };
+    
 
-    // Function to handle form submission
     const submitLoginForm = (e) => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Validate the form data
         const validation = validateLoginForm();
 
         if (validation.error) {
@@ -65,7 +66,6 @@ const Login = () => {
         }
     };
 
-    // Function to validate form data using Joi
     const validateLoginForm = () => {
         const schema = Joi.object({
             username: Joi.string()
@@ -89,7 +89,6 @@ const Login = () => {
 
     return (
         <>
-            {/* Display validation error messages */}
             {errorList.length > 0 && (
                 <div className="alert alert-danger my-2">
                     <ul className="mb-0">
@@ -102,11 +101,10 @@ const Login = () => {
                 </div>
             )}
 
-            {/* Display general error message */}
             {error && <div className='alert alert-danger my-2'>{error}</div>}
 
-            <div className="Login-container">
-                <h1>Login</h1>
+            <div className="login-container">
+                <h2>Login</h2>
                 <form onSubmit={submitLoginForm}>
                     <input
                         name='username'
@@ -137,5 +135,3 @@ const Login = () => {
 };
 
 export default Login;
-
-               

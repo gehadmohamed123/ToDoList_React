@@ -5,7 +5,11 @@ import './ToDoList.css';
 export default function ToDoList() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
+  const [description, setDescription] = useState(''); // إضافة حالة جديدة للوصف
   const [error, setError] = useState('');
+
+  // Assuming the token is stored in localStorage
+  const token = localStorage.getItem('token');
 
   // Fetch all tasks
   useEffect(() => {
@@ -14,7 +18,11 @@ export default function ToDoList() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks');
+      const response = await axios.get(`http://localhost:5000/api/tasks`, {
+        headers: {
+          token: token,
+        },
+      });
       setTasks(response.data);
     } catch (error) {
       setError('Failed to fetch tasks');
@@ -29,8 +37,17 @@ export default function ToDoList() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/tasks', { task: newTask });
+      await axios.post(
+        'http://localhost:5000/api/tasks',
+        { name: newTask, description }, // إرسال الوصف الموجود في الحالة
+        {
+          headers: {
+            token: token,
+          },
+        }
+      );
       setNewTask('');
+      setDescription(''); // إعادة تعيين الوصف بعد الإضافة
       fetchTasks(); // Refresh tasks after adding
     } catch (error) {
       setError('Failed to add task');
@@ -40,7 +57,11 @@ export default function ToDoList() {
   // Delete a task by ID
   const deleteTask = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`);
+      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
+        headers: {
+          token: token,
+        },
+      });
       fetchTasks(); // Refresh tasks after deletion
     } catch (error) {
       setError('Failed to delete task');
@@ -59,6 +80,13 @@ export default function ToDoList() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
         />
+        <input
+          className="todo-input"
+          type="text"
+          placeholder="Enter description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)} // تحديث الوصف
+        />
         <button className="todo-button" type="submit">Add Task</button>
       </form>
       
@@ -67,7 +95,7 @@ export default function ToDoList() {
       <ul className="todo-list">
         {tasks.map(task => (
           <li className="todo-item" key={task._id}>
-            {task.task}
+            {task.name} {/* استخدام name بدلاً من task */}
             <button className="todo-delete" onClick={() => deleteTask(task._id)}>Delete</button>
           </li>
         ))}
