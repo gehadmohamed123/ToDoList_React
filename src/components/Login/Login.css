@@ -1,0 +1,63 @@
+body {
+    background-color: #121212; /* Ensure dark background */
+    color: white; /* White text */
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh; /* Ensure the background covers the entire view */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 300px;
+    padding: 20px;
+    background-color: #1e1e1e; /* Container background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin-top: 50px; /* Push form down */
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+}
+
+input:focus {
+    outline: none;
+    border: 2px solid #007bff; /* Border color on focus */
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* Button color */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3; /* Hover button color */
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+.login-link {
+    margin-top: 15px;
+}
